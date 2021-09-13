@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mapError == null) {
                     double distanceInMeters = 1000 * 10;
                     mapView.getCamera().lookAt(
-                            new GeoCoordinates(40.7831, 73.9712), distanceInMeters);
+                            new GeoCoordinates(40.7831, -73.9712), distanceInMeters);
                 } else {
                     Log.d(TAG, "Loading map failed: mapError: " + mapError.name());
                 }
@@ -127,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadStyle(View view) {
-        String filename = "";
+        // Method to add a custom map style. Use style editor offered by HERE
+        String filename = "omv-traffic-traffic-normal-night.scene.json";
         AssetManager assetManager = this.getAssets();
 
         try {
