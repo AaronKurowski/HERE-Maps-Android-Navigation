@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.here.hellomap.PermissionsRequestor.ResultListener;
 import com.here.sdk.core.GeoCoordinates;
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private PermissionsRequestor permissionsRequestor;
     private MapView mapView;
+
+    private int styleCounter = 0;
+    private MapScheme scheme = MapScheme.NORMAL_DAY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +99,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void changeMapStyle(View view) {
+        styleCounter++;
+        if(styleCounter == 4) styleCounter = 0;
+
+        if(styleCounter == 0) scheme = MapScheme.NORMAL_DAY;
+        if(styleCounter == 1) scheme = MapScheme.SATELLITE;
+        if(styleCounter == 2) scheme = MapScheme.NORMAL_NIGHT;
+        if(styleCounter == 3) scheme = MapScheme.HYBRID_DAY;
+
+        mapView.getMapScene().loadScene(scheme, new MapScene.LoadSceneCallback() {
+            @Override
+            public void onLoadScene(MapError mapError) {
+                if(mapError == null) {
+                    // do something
+                } else {
+                    // error handling
+                }
+            }
+        });
+
     }
 
     @Override
