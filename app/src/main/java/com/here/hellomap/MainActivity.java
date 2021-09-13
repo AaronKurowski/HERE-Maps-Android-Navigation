@@ -19,6 +19,7 @@
 
 package com.here.hellomap;
 
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,6 +33,8 @@ import com.here.sdk.mapview.MapError;
 import com.here.sdk.mapview.MapScene;
 import com.here.sdk.mapview.MapScheme;
 import com.here.sdk.mapview.MapView;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mapError == null) {
                     double distanceInMeters = 1000 * 10;
                     mapView.getCamera().lookAt(
-                            new GeoCoordinates(52.530932, 13.384915), distanceInMeters);
+                            new GeoCoordinates(40.7831, 73.9712), distanceInMeters);
                 } else {
                     Log.d(TAG, "Loading map failed: mapError: " + mapError.name());
                 }
@@ -115,12 +118,34 @@ public class MainActivity extends AppCompatActivity {
             public void onLoadScene(MapError mapError) {
                 if(mapError == null) {
                     // do something
+                    // TODO: Write onLoadScene method
                 } else {
                     // error handling
                 }
             }
         });
+    }
 
+    public void loadStyle(View view) {
+        String filename = "";
+        AssetManager assetManager = this.getAssets();
+
+        try {
+            assetManager.open(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mapView.getMapScene().loadScene("" + filename, new MapScene.LoadSceneCallback() {
+            @Override
+            public void onLoadScene(MapError mapError) {
+                if(mapError == null) {
+                    // do something
+                } else {
+                    // error handling
+                }
+            }
+        });
     }
 
     @Override

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,8 +8,27 @@
 
     <com.here.sdk.mapview.MapView
         android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="414dp"
+        android:layout_height="732dp">
+
     </com.here.sdk.mapview.MapView>
+
+    <LinearLayout
+        app:layout_constraintTop_toTopOf="@android:style/Widget.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#009688"
+            android:onClick="changeMapStyle"
+            android:text="Map Style Toggle" />
+
+    </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>
