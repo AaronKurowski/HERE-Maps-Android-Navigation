@@ -28,7 +28,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.here.hellomap.PermissionsRequestor.ResultListener;
+import com.here.sdk.core.GeoBox;
 import com.here.sdk.core.GeoCoordinates;
+import com.here.sdk.mapview.MapCamera;
 import com.here.sdk.mapview.MapError;
 import com.here.sdk.mapview.MapScene;
 import com.here.sdk.mapview.MapScheme;
@@ -44,6 +46,13 @@ public class MainActivity extends AppCompatActivity {
 
     private int styleCounter = 0;
     private MapScheme scheme = MapScheme.NORMAL_DAY;
+
+    private int cameraCounter = 0;
+    private GeoCoordinates cameraCoordinates;
+    private double bearingInDegrees;
+    private double tiltInDegrees;
+    private MapCamera.OrientationUpdate cameraOrientation;
+    private double distanceInMeters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +156,42 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void changeCamera(View view) {
+        cameraCounter++;
+        if(cameraCounter == 4) cameraCounter = 0;
+
+        cameraCoordinates = new GeoCoordinates(40.7831, -73.9712);
+        bearingInDegrees = 0;
+        tiltInDegrees = 0;
+        cameraOrientation = new MapCamera.OrientationUpdate(bearingInDegrees, tiltInDegrees);
+        distanceInMeters = 1000 * 10;
+
+        if(cameraCounter == 0) {
+            mapView.getCamera().lookAt(cameraCoordinates, cameraOrientation, distanceInMeters);
+
+        } else if(cameraCounter == 1) {
+
+            bearingInDegrees = 90;
+            cameraOrientation = new MapCamera.OrientationUpdate(bearingInDegrees, tiltInDegrees);
+            mapView.getCamera().lookAt(cameraCoordinates, cameraOrientation, distanceInMeters);
+
+        } else if(cameraCounter == 2) {
+
+            tiltInDegrees = 45;
+            distanceInMeters = 1000 * 2;
+            cameraOrientation = new MapCamera.OrientationUpdate(bearingInDegrees, tiltInDegrees);
+            mapView.getCamera().lookAt(cameraCoordinates, cameraOrientation, distanceInMeters);
+
+        } else if(cameraCounter == 3) {
+
+            // create a rectangle with two sets of coordinates
+            GeoBox cameraBox = new GeoBox(new GeoCoordinates(40.72537, -73.98401), new GeoCoordinates(40.72757, -73.9793));
+
+            mapView.getCamera().lookAt(cameraBox, cameraOrientation);
+
+        }
     }
 
     @Override
