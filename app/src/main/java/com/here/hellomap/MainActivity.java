@@ -26,6 +26,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.here.hellomap.PermissionsRequestor.ResultListener;
 import com.here.sdk.core.Anchor2D;
@@ -33,7 +34,10 @@ import com.here.sdk.core.Color;
 import com.here.sdk.core.GeoBox;
 import com.here.sdk.core.GeoCoordinates;
 import com.here.sdk.core.GeoPolyline;
+import com.here.sdk.core.Metadata;
+import com.here.sdk.core.Point2D;
 import com.here.sdk.core.errors.InstantiationErrorException;
+import com.here.sdk.gestures.TapListener;
 import com.here.sdk.mapview.MapCamera;
 import com.here.sdk.mapview.MapError;
 import com.here.sdk.mapview.MapImage;
@@ -43,9 +47,12 @@ import com.here.sdk.mapview.MapPolyline;
 import com.here.sdk.mapview.MapScene;
 import com.here.sdk.mapview.MapScheme;
 import com.here.sdk.mapview.MapView;
+import com.here.sdk.mapview.MapViewBase;
+import com.here.sdk.mapview.PickMapItemsResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -210,11 +217,17 @@ public class MainActivity extends AppCompatActivity {
         // Create Anchor
         Anchor2D anchor2D = new Anchor2D(0.5f, 1.0f);
 
+        // Add metadata
+        Metadata metadata = new Metadata();
+        metadata.setString("key_poi", "This is New York");
+
         // Create MapMarker
         MapMarker mapMarker = new MapMarker(new GeoCoordinates(40.70055, -74.0086), mapImage, anchor2D);
+        mapMarker.setMetadata(metadata);
 
         // Add the marker to the map
         mapView.getMapScene().addMapMarker(mapMarker);
+        setTapGestureHandler();
     }
 
     public void addPolyline(View view) {
@@ -242,6 +255,39 @@ public class MainActivity extends AppCompatActivity {
 
         // Add that to the map
         mapView.getMapScene().addMapPolyline(mapPolyline);
+    }
+
+    public void setTapGestureHandler() {
+        mapView.getGestures().setTapListener(new TapListener() {
+            @Override
+            public void onTap(Point2D touchPoint) {
+                mapView.pickMapItems(touchPoint, 2, new MapViewBase.PickMapItemsCallback() {
+                    @Override
+                    public void onPickMapItems(PickMapItemsResult pickMapItemsResult) {
+                        List<MapMarker> mapMarkerList = pickMapItemsResult.getMarkers();
+                        MapMarker pickedMarker = mapMarkerList.get(0);
+                        Metadata metadata = pickedMarker.getMetadata();
+
+                        if(metadata != null) {
+                            String message = "No message found.";
+                            String string = metadata.getString("key_poi");
+                            if(string != null) {
+                                message = string;
+                            }
+                            Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+//                        if(metadata == null) {
+//                            Toast toast = Toast.makeText(getApplicationContext(), "Not here", Toast.LENGTH_SHORT);
+//                            toast.show();
+//                        } else if(metadata.getString("New York").equals("New York")) {
+//                            Toast toast = Toast.makeText(getApplicationContext(), "You found New York", Toast.LENGTH_SHORT);
+//                            toast.show();
+//                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
