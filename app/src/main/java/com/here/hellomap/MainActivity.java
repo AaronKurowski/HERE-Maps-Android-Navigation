@@ -53,6 +53,7 @@ import com.here.sdk.mapview.MapScheme;
 import com.here.sdk.mapview.MapView;
 import com.here.sdk.mapview.MapViewBase;
 import com.here.sdk.mapview.PickMapItemsResult;
+import com.here.sdk.search.AddressQuery;
 import com.here.sdk.search.Place;
 import com.here.sdk.search.SearchCallback;
 import com.here.sdk.search.SearchEngine;
@@ -339,6 +340,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void searchAddress(View view) {
+        // Search by specific text input
+        int maxItems = 1;
+        SearchOptions searchOptions = new SearchOptions(LanguageCode.EN_US, maxItems);
+        EditText editText = findViewById(R.id.searchText);
+        AddressQuery addressQuery = new AddressQuery(editText.getText().toString(), getScreenCenter());
+
+        searchEngine.search(addressQuery, searchOptions, new SearchCallback() {
+            @Override
+            public void onSearchCompleted(SearchError searchError, List<Place> list) {
+                for(Place result : list) {
+                    TextView textView = new TextView(getApplicationContext());
+                    textView.setTextColor(android.graphics.Color.parseColor("#FFFFFF"));
+                    textView.setText(result.getTitle() + "\n" + result.getAddress().addressText);
+
+                    LinearLayout linearLayout = new LinearLayout(getApplicationContext());
+                    linearLayout.setBackgroundResource(R.color.colorPrimary);
+                    linearLayout.setPadding(10, 10, 10, 10);
+                    linearLayout.addView(textView);
+
+                    mapView.pinView(linearLayout, result.getGeoCoordinates());
+
+                    mapView.getCamera().lookAt(result.getGeoCoordinates());
+                }
+            }
+        });
 
     }
 
