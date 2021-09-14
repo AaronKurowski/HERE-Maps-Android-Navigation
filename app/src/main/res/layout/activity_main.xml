@@ -35,7 +35,7 @@
             android:layout_weight="1"
             android:backgroundTint="#009688"
             android:onClick="loadStyle"
-            android:text="Custom Style" />
+            android:text="Change Map Style" />
 
         <Button
             style="@android:style/Widget.Button"
@@ -46,7 +46,53 @@
             android:onClick="changeCamera"
             android:text="Camera" />
 
+        <Button
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#009688"
+            android:onClick="addMarker"
+            android:text="Marker" />
+
+        <Button
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#009688"
+            android:onClick="addPolyline"
+            android:text="Polyline" />
+
+<!--        <LinearLayout-->
+<!--            app:layout_constraintTop_toTopOf="@android:style/Widget.Button"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal">-->
+
+<!--            <Button-->
+<!--                style="@android:style/Widget.Button"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:backgroundTint="#009688"-->
+<!--                android:onClick="addMarker"-->
+<!--                android:text="Marker" />-->
+
+<!--            &lt;!&ndash;        <Button&ndash;&gt;-->
+<!--            &lt;!&ndash;            style="@android:style/Widget.Button"&ndash;&gt;-->
+<!--            &lt;!&ndash;            android:layout_width="0dp"&ndash;&gt;-->
+<!--            &lt;!&ndash;            android:layout_height="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;            android:layout_weight="1"&ndash;&gt;-->
+<!--            &lt;!&ndash;            android:backgroundTint="#009688"&ndash;&gt;-->
+<!--            &lt;!&ndash;            android:onClick=""&ndash;&gt;-->
+<!--            &lt;!&ndash;            android:text="" />&ndash;&gt;-->
+
+<!--        </LinearLayout>-->
+
     </LinearLayout>
+
+
 
 
 </android.support.constraint.ConstraintLayout>

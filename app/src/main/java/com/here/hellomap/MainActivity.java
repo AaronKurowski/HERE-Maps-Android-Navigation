@@ -28,15 +28,24 @@ import android.util.Log;
 import android.view.View;
 
 import com.here.hellomap.PermissionsRequestor.ResultListener;
+import com.here.sdk.core.Anchor2D;
+import com.here.sdk.core.Color;
 import com.here.sdk.core.GeoBox;
 import com.here.sdk.core.GeoCoordinates;
+import com.here.sdk.core.GeoPolyline;
+import com.here.sdk.core.errors.InstantiationErrorException;
 import com.here.sdk.mapview.MapCamera;
 import com.here.sdk.mapview.MapError;
+import com.here.sdk.mapview.MapImage;
+import com.here.sdk.mapview.MapImageFactory;
+import com.here.sdk.mapview.MapMarker;
+import com.here.sdk.mapview.MapPolyline;
 import com.here.sdk.mapview.MapScene;
 import com.here.sdk.mapview.MapScheme;
 import com.here.sdk.mapview.MapView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -192,6 +201,47 @@ public class MainActivity extends AppCompatActivity {
             mapView.getCamera().lookAt(cameraBox, cameraOrientation);
 
         }
+    }
+
+    public void addMarker(View view) {
+        // Create MapImage
+        MapImage mapImage = MapImageFactory.fromResource(this.getResources(), R.drawable.marker);
+
+        // Create Anchor
+        Anchor2D anchor2D = new Anchor2D(0.5f, 1.0f);
+
+        // Create MapMarker
+        MapMarker mapMarker = new MapMarker(new GeoCoordinates(40.70055, -74.0086), mapImage, anchor2D);
+
+        // Add the marker to the map
+        mapView.getMapScene().addMapMarker(mapMarker);
+    }
+
+    public void addPolyline(View view) {
+        // Create a GeoPolyline
+        ArrayList<GeoCoordinates> polylineCoordinates = new ArrayList();
+        polylineCoordinates.add(new GeoCoordinates(40.70638, -74.01896));
+        polylineCoordinates.add(new GeoCoordinates(40.70127, -74.01497));
+        polylineCoordinates.add(new GeoCoordinates(40.70329, -74.00746));
+        polylineCoordinates.add(new GeoCoordinates(40.70797, -73.99961));
+
+        GeoPolyline geoPolyline;
+        try {
+            geoPolyline = new GeoPolyline(polylineCoordinates);
+        } catch(InstantiationErrorException e) {
+            // Only for now. Right error handling later
+            geoPolyline = null;
+        }
+
+        // Define the style of the polyline
+        float widthInPixels = 20;
+        Color lineColor = Color.valueOf(0, 0.56f, 0.54f, 0.63f);
+
+        // Create MapPolyline
+        MapPolyline mapPolyline = new MapPolyline(geoPolyline, widthInPixels, lineColor);
+
+        // Add that to the map
+        mapView.getMapScene().addMapPolyline(mapPolyline);
     }
 
     @Override
