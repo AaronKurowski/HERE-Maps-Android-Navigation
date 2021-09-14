@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,85 +11,113 @@
         android:id="@+id/map_view"
         android:layout_width="414dp"
         android:layout_height="732dp">
-
     </com.here.sdk.mapview.MapView>
 
     <LinearLayout
-        app:layout_constraintTop_toTopOf="@android:style/Widget.Button"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <Button
-            style="@android:style/Widget.Button"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#009688"
-            android:onClick="changeMapStyle"
-            android:text="Map Style Toggle" />
+            android:orientation="horizontal">
 
-        <Button
-            style="@android:style/Widget.Button"
-            android:layout_width="0dp"
+            <Button
+                style="@android:style/Widget.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#009688"
+                android:onClick="changeMapStyle"
+                android:text="Map Style Toggle" />
+
+            <Button
+                style="@android:style/Widget.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#009688"
+                android:onClick="loadStyle"
+                android:text="Change Map Style" />
+
+            <Button
+                style="@android:style/Widget.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#009688"
+                android:onClick="changeCamera"
+                android:text="Camera" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#009688"
-            android:onClick="loadStyle"
-            android:text="Change Map Style" />
+            android:orientation="horizontal">
 
-        <Button
-            style="@android:style/Widget.Button"
-            android:layout_width="0dp"
+            <Button
+                style="@android:style/Widget.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#009688"
+                android:onClick="addPolyline"
+                android:text="Polyline" />
+
+            <Button
+                style="@android:style/Widget.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#009688"
+                android:onClick="addMarker"
+                android:text="Marker" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#009688"
-            android:onClick="changeCamera"
-            android:text="Camera" />
+            android:orientation="horizontal">
 
-        <Button
-            style="@android:style/Widget.Button"
-            android:layout_width="0dp"
+            <EditText
+                android:id="@+id/searchText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="text"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#009688"
-            android:onClick="addMarker"
-            android:text="Marker" />
+            android:orientation="horizontal">
 
-        <Button
-            style="@android:style/Widget.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#009688"
-            android:onClick="addPolyline"
-            android:text="Polyline" />
+            <Button
+                style="@android:style/Widget.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#A4C3FF"
+                android:onClick="searchPlaces"
+                android:text="Places" />
 
-<!--        <LinearLayout-->
-<!--            app:layout_constraintTop_toTopOf="@android:style/Widget.Button"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal">-->
+            <Button
+                style="@android:style/Widget.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#009688"
+                android:onClick="searchAddress"
+                android:text="Address" />
 
-<!--            <Button-->
-<!--                style="@android:style/Widget.Button"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:backgroundTint="#009688"-->
-<!--                android:onClick="addMarker"-->
-<!--                android:text="Marker" />-->
-
-<!--            &lt;!&ndash;        <Button&ndash;&gt;-->
-<!--            &lt;!&ndash;            style="@android:style/Widget.Button"&ndash;&gt;-->
-<!--            &lt;!&ndash;            android:layout_width="0dp"&ndash;&gt;-->
-<!--            &lt;!&ndash;            android:layout_height="wrap_content"&ndash;&gt;-->
-<!--            &lt;!&ndash;            android:layout_weight="1"&ndash;&gt;-->
-<!--            &lt;!&ndash;            android:backgroundTint="#009688"&ndash;&gt;-->
-<!--            &lt;!&ndash;            android:onClick=""&ndash;&gt;-->
-<!--            &lt;!&ndash;            android:text="" />&ndash;&gt;-->
-
-<!--        </LinearLayout>-->
+        </LinearLayout>
 
     </LinearLayout>
 

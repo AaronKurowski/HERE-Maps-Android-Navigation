@@ -26,6 +26,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.here.hellomap.PermissionsRequestor.ResultListener;
@@ -34,6 +37,7 @@ import com.here.sdk.core.Color;
 import com.here.sdk.core.GeoBox;
 import com.here.sdk.core.GeoCoordinates;
 import com.here.sdk.core.GeoPolyline;
+import com.here.sdk.core.LanguageCode;
 import com.here.sdk.core.Metadata;
 import com.here.sdk.core.Point2D;
 import com.here.sdk.core.errors.InstantiationErrorException;
@@ -49,6 +53,12 @@ import com.here.sdk.mapview.MapScheme;
 import com.here.sdk.mapview.MapView;
 import com.here.sdk.mapview.MapViewBase;
 import com.here.sdk.mapview.PickMapItemsResult;
+import com.here.sdk.search.Place;
+import com.here.sdk.search.SearchCallback;
+import com.here.sdk.search.SearchEngine;
+import com.here.sdk.search.SearchError;
+import com.here.sdk.search.SearchOptions;
+import com.here.sdk.search.TextQuery;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -70,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     private MapCamera.OrientationUpdate cameraOrientation;
     private double distanceInMeters;
 
+    private SearchEngine searchEngine;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +102,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         handleAndroidPermissions();
+
+        try {
+            searchEngine = new SearchEngine();
+
+        } catch (InstantiationErrorException e) {
+           throw new RuntimeException("Something went wrong: " + e);
+        }
     }
 
     private void handleAndroidPermissions() {
@@ -175,6 +194,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeCamera(View view) {
+        // To fix deprecation use:
+        // GeoCoordinationUpdate cameraOrientation = new GeoCoordinateUpdate(bearingInDegrees, tiltInDegrees);
+
         cameraCounter++;
         if(cameraCounter == 4) cameraCounter = 0;
 
@@ -288,6 +310,47 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    public void searchPlaces(View view) {
+        // Searches for places around center of screen
+        int maxItems = 5;
+        SearchOptions searchOptions = new SearchOptions(LanguageCode.EN_US, maxItems);
+        EditText editText = findViewById(R.id.searchText);
+        TextQuery textQuery = new TextQuery(editText.getText().toString(), getScreenCenter());
+
+        searchEngine.search(textQuery, searchOptions, new SearchCallback() {
+            @Override
+            public void onSearchCompleted(SearchError searchError, List<Place> list) {
+                for(Place result : list) {
+                    TextView textView = new TextView(getApplicationContext());
+                    textView.setTextColor(android.graphics.Color.parseColor("#FFFFFF"));
+                    textView.setText(result.getTitle() + "\n" + result.getAddress().addressText);
+
+                    LinearLayout linearLayout = new LinearLayout(getApplicationContext());
+                    linearLayout.setBackgroundResource(R.color.colorPrimary);
+                    linearLayout.setPadding(10, 10, 10, 10);
+                    linearLayout.addView(textView);
+
+                    mapView.pinView(linearLayout, result.getGeoCoordinates());
+                }
+            }
+        });
+    }
+
+    public void searchAddress(View view) {
+
+    }
+
+    public void searchAutoSuggest(View view) {
+
+    }
+
+    private GeoCoordinates getScreenCenter() {
+        int screenWidthInPixels = mapView.getWidth();
+        int screenHeightInPixels = mapView.getHeight();
+        Point2D point = new Point2D(screenWidthInPixels * 0.5, screenHeightInPixels * 0.5);
+        return mapView.viewToGeoCoordinates(point);
     }
 
     @Override
