@@ -26,8 +26,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,11 +57,16 @@ import com.here.sdk.mapview.MapViewBase;
 import com.here.sdk.mapview.PickMapItemsResult;
 import com.here.sdk.search.AddressQuery;
 import com.here.sdk.search.Place;
+import com.here.sdk.search.PlaceCategory;
 import com.here.sdk.search.SearchCallback;
 import com.here.sdk.search.SearchEngine;
 import com.here.sdk.search.SearchError;
 import com.here.sdk.search.SearchOptions;
+import com.here.sdk.search.SuggestCallback;
+import com.here.sdk.search.Suggestion;
 import com.here.sdk.search.TextQuery;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -370,6 +377,33 @@ public class MainActivity extends AppCompatActivity {
 
     public void searchAutoSuggest(View view) {
 
+        int maxItems = 3;
+        SearchOptions searchOptions = new SearchOptions(LanguageCode.EN_US, maxItems);
+        EditText editText = findViewById(R.id.searchText);
+        TextQuery textQuery = new TextQuery(editText.getText().toString(), getScreenCenter());
+
+        searchEngine.suggest(textQuery, searchOptions, new SuggestCallback() {
+            @Override
+            public void onSuggestCompleted(SearchError searchError, List<Suggestion> list) {
+                // Error
+                ArrayList<String> arrayList = new ArrayList<>();
+
+                for(Suggestion suggestResult : list) {
+                    Place place = suggestResult.getPlace();
+                    if(place != null) {
+                        arrayList.add(place.getTitle());
+                    } else {
+                        arrayList.add(suggestResult.getTitle());
+                    }
+                }
+
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, arrayList);
+
+                ListView listView = findViewById(R.id.suggestionsListView);
+                listView.setAdapter(arrayAdapter);
+
+            }
+        });
     }
 
     private GeoCoordinates getScreenCenter() {

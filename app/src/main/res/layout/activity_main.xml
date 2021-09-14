@@ -117,6 +117,29 @@
                 android:onClick="searchAddress"
                 android:text="Address" />
 
+            <Button
+                style="@android:style/Widget.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#009688"
+                android:onClick="searchAutoSuggest"
+                android:text="Suggest" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ListView
+                android:id="@+id/suggestionsListView"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"/>
+
         </LinearLayout>
 
     </LinearLayout>
