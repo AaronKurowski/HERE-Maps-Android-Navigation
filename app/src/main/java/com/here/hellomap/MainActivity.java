@@ -19,6 +19,7 @@
 
 package com.here.hellomap;
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -43,6 +44,7 @@ import com.here.sdk.core.LanguageCode;
 import com.here.sdk.core.Metadata;
 import com.here.sdk.core.Point2D;
 import com.here.sdk.core.errors.InstantiationErrorException;
+import com.here.sdk.gestures.GestureState;
 import com.here.sdk.gestures.TapListener;
 import com.here.sdk.mapview.MapCamera;
 import com.here.sdk.mapview.MapError;
@@ -55,6 +57,17 @@ import com.here.sdk.mapview.MapScheme;
 import com.here.sdk.mapview.MapView;
 import com.here.sdk.mapview.MapViewBase;
 import com.here.sdk.mapview.PickMapItemsResult;
+import com.here.sdk.routing.AvoidanceOptions;
+import com.here.sdk.routing.CalculateRouteCallback;
+import com.here.sdk.routing.CarOptions;
+import com.here.sdk.routing.HazardousGood;
+import com.here.sdk.routing.OptimizationMode;
+import com.here.sdk.routing.Route;
+import com.here.sdk.routing.RouteOptions;
+import com.here.sdk.routing.RouteTextOptions;
+import com.here.sdk.routing.RoutingEngine;
+import com.here.sdk.routing.RoutingError;
+import com.here.sdk.routing.Waypoint;
 import com.here.sdk.search.AddressQuery;
 import com.here.sdk.search.Place;
 import com.here.sdk.search.PlaceCategory;
@@ -90,6 +103,11 @@ public class MainActivity extends AppCompatActivity {
 
     private SearchEngine searchEngine;
 
+    private RoutingEngine routingEngine;
+    private List<Waypoint> waypoints = new ArrayList<>();
+    private List<MapMarker> waypointMarkers = new ArrayList<>();
+    private MapPolyline routePolyline;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +128,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         handleAndroidPermissions();
+
+        try {
+            routingEngine = new RoutingEngine();
+        } catch(InstantiationErrorException e) {
+            // error handling :p
+        }
+
+        setLongPressGestureHandler();
 
         try {
             searchEngine = new SearchEngine();
@@ -375,37 +401,106 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void searchAutoSuggest(View view) {
+//    public void searchAutoSuggest(View view) {
+//
+//        int maxItems = 3;
+//        SearchOptions searchOptions = new SearchOptions(LanguageCode.EN_US, maxItems);
+//        EditText editText = findViewById(R.id.searchText);
+//        TextQuery textQuery = new TextQuery(editText.getText().toString(), getScreenCenter());
+//
+//        searchEngine.suggest(textQuery, searchOptions, new SuggestCallback() {
+//            @Override
+//            public void onSuggestCompleted(SearchError searchError, List<Suggestion> list) {
+//                // Error
+//                ArrayList<String> arrayList = new ArrayList<>();
+//
+//                for(Suggestion suggestResult : list) {
+//                    Place place = suggestResult.getPlace();
+//                    if(place != null) {
+//                        arrayList.add(place.getTitle());
+//                    } else {
+//                        arrayList.add(suggestResult.getTitle());
+//                    }
+//                }
+//
+//                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, arrayList);
+//
+//                ListView listView = findViewById(R.id.suggestionsListView);
+//                listView.setAdapter(arrayAdapter);
+//
+//            }
+//        });
+//    }
 
-        int maxItems = 3;
-        SearchOptions searchOptions = new SearchOptions(LanguageCode.EN_US, maxItems);
-        EditText editText = findViewById(R.id.searchText);
-        TextQuery textQuery = new TextQuery(editText.getText().toString(), getScreenCenter());
+    private void setLongPressGestureHandler() {
+        mapView.getGestures().setLongPressListener(((gestureState, touchPoint) -> {
+         if(gestureState == GestureState.BEGIN) {
+             MapImage waypointImage = MapImageFactory.fromResource(this.getResources(), R.drawable.marker);
+             MapMarker waypointMarker = new MapMarker(mapView.viewToGeoCoordinates(touchPoint), waypointImage);
+             mapView.getMapScene().addMapMarker(waypointMarker);
 
-        searchEngine.suggest(textQuery, searchOptions, new SuggestCallback() {
-            @Override
-            public void onSuggestCompleted(SearchError searchError, List<Suggestion> list) {
-                // Error
-                ArrayList<String> arrayList = new ArrayList<>();
+             waypointMarkers.add(waypointMarker);
 
-                for(Suggestion suggestResult : list) {
-                    Place place = suggestResult.getPlace();
-                    if(place != null) {
-                        arrayList.add(place.getTitle());
-                    } else {
-                        arrayList.add(suggestResult.getTitle());
-                    }
-                }
-
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, arrayList);
-
-                ListView listView = findViewById(R.id.suggestionsListView);
-                listView.setAdapter(arrayAdapter);
-
-            }
-        });
+             waypoints.add(new Waypoint(mapView.viewToGeoCoordinates(touchPoint)));
+         }
+            }));
     }
 
+    public void calculateRoute(View view) {
+
+        // Check out the code below for customized routing
+
+//        RouteOptions routeOptions = new RouteOptions();
+//        routeOptions.alternatives = 3;
+//        routeOptions.optimizationMode = OptimizationMode.FASTEST;
+//
+////        HazardousGood.COMBUSTIBLE;
+//
+//        CarOptions options = new CarOptions(routeOptions, new RouteTextOptions(), new AvoidanceOptions());
+
+        routingEngine.calculateRoute(
+                waypoints,
+                new CarOptions(), // This will be TruckOptions in the main app!!
+                new CalculateRouteCallback() {
+                    @Override
+                    public void onRouteCalculated(RoutingError routingError, List<Route> routes) {
+                        if(routingError == null) {
+                            Route route = routes.get(0);
+                            drawRoute(route);
+                        } else {
+
+                        }
+                    }
+                }
+        );
+    }
+
+    private void drawRoute(Route route) {
+        GeoPolyline routeGeoPolyline;
+
+        try {
+            routeGeoPolyline = new GeoPolyline(route.getPolyline());
+        } catch(InstantiationErrorException e) {
+            return;
+        }
+        routePolyline = new MapPolyline(routeGeoPolyline, 20, Color.valueOf(0, 0.56f, 0.54f, 0.63f));
+
+        mapView.getMapScene().addMapPolyline(routePolyline);
+
+//        routeTextView.append("Currently " + route.getTrafficDelayInSeconds() + " seconds slow due to traffic.");
+    }
+
+    public void clearMap(View view) {
+        for(MapMarker marker : waypointMarkers) {
+            mapView.getMapScene().removeMapMarker(marker);
+        }
+
+        mapView.getMapScene().removeMapPolyline(routePolyline);
+
+        waypoints.clear();
+    }
+
+    // Helper function
     private GeoCoordinates getScreenCenter() {
         int screenWidthInPixels = mapView.getWidth();
         int screenHeightInPixels = mapView.getHeight();
